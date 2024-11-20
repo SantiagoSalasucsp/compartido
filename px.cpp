@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // Conectar al semáforo
+    
     int id = semget(KEY, 1, 0666 | IPC_CREAT);
     if (id < 0) {
         perror("semget");
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     struct sembuf p = {0, -1, SEM_UNDO};
     struct sembuf v = {0, +1, SEM_UNDO};
 
-    // Conectar a memoria compartida
+    
     int shmid;
     key_t key = 5678;
     char *shm, *s;
@@ -54,27 +54,27 @@ int main(int argc, char* argv[]) {
     std::cout << txt << std::endl;
 
     while(true) {
-        // Tomar semáforo
+        
         if (semop(id, &p, 1) < 0) {
             perror("semop p");
             exit(13);
         }
 
-        // Leer valor actual
+        
         strncpy(d, shm, 3);
         int shmv = atoi(d);
 
-        // Si es nuestro turno
+        
         if(shmv == (V-1)) {
             sprintf(shm, "%03d", V);
             std::string mensaje = txt + " HOLA SOY C++";
             strcpy(s, mensaje.c_str());
-            V = V + 4;  // Incrementar de 4 en 4
+            V = V + 3;  
         }
 
         sleep(1);
 
-        // Liberar semáforo
+        
         if (semop(id, &v, 1) < 0) {
             perror("semop v");
             exit(13);
